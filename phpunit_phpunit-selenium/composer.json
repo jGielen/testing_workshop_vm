@@ -1,0 +1,6 @@
+{
+    "require": {
+        "phpunit/phpunit-selenium": "^4.1",
+        "sensiolabs-de/deprecation-detector": "@dev"
+    }
+}
