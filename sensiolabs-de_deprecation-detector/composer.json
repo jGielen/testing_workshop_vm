@@ -1,2 +1,5 @@
 {
+    "require": {
+        "sensiolabs-de/deprecation-detector": "@dev"
+    }
 }
