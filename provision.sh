@@ -27,7 +27,7 @@ apt-get install -y apt-transport-https lsb-release ca-certificates
 
 # Tools
 
-apt-get install -y tmux htop zip unzip strace curl tcpdump netcat tree git jq supervisor
+apt-get install -y tmux htop zip unzip strace curl tcpdump netcat tree git jq supervisor aptitude
 
 # Vim
 
@@ -66,6 +66,8 @@ EOF
 
 # Sync package index files
 apt-get update
+
+# PHP 7.2
 
 apt-get -y install php7.2-cli php7.2-fpm php7.2-dev php7.2-curl php7.2-intl \
     php7.2-mysql php7.2-sqlite3 php7.2-gd php7.2-mbstring php7.2-xml
@@ -109,6 +111,35 @@ ln -s /etc/php/7.2/mods-available/xdebug.ini /etc/php/7.2/fpm/conf.d/10-xdebug.i
 # Reload FPM
 service php7.2-fpm restart
 
+# PHP 5.6
+apt-get -y install php5.6-cli php5.6-fpm php5.6-dev php5.6-curl php5.6-intl \
+    php5.6-mysql php5.6-sqlite3 php5.6-gd php5.6-mbstring php5.6-xml \
+    php5.6-xdebug php5.6-apcu
+
+# PHP config
+sed -i 's/;date.timezone.*/date.timezone = Europe\/Brussels/' /etc/php/5.6/cli/php.ini
+sed -i 's/;date.timezone.*/date.timezone = Europe\/Brussels/' /etc/php/5.6/fpm/php.ini
+sed -i 's/upload_max_filesize = .*/upload_max_filesize = 20M/' /etc/php/5.6/fpm/php.ini
+sed -i 's/post_max_size = .*/post_max_size = 24M/' /etc/php/5.6/fpm/php.ini
+sed -i 's/^user = www-data/user = vagrant/' /etc/php/5.6/fpm/pool.d/www.conf
+sed -i 's/^group = www-data/group = vagrant/' /etc/php/6.6/fpm/pool.d/www.conf
+
+cat << EOF >/etc/php/5.6/mods-available/xdebug.ini
+zend_extension=/usr/lib/php/${PHP_API}/xdebug.so
+xdebug.remote_enable=1
+xdebug.remote_autostart=1
+xdebug.remote_host=192.168.33.1
+xdebug.max_nesting_level=256
+; xdebug.profiler_enable=1
+; xdebug.profiler_output_dir=/vagrant/dumps
+EOF
+
+ln -s /etc/php/5.6/mods-available/xdebug.ini /etc/php/5.6/cli/conf.d/10-xdebug.ini
+ln -s /etc/php/5.6/mods-available/xdebug.ini /etc/php/5.6/fpm/conf.d/10-xdebug.ini
+
+# Reload FPM
+service php5.6-fpm restart
+
 # composer
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin
 ln -s /usr/bin/composer.phar /usr/bin/composer
@@ -128,7 +159,8 @@ apt-get install -y openjdk-8-jre-headless
 
 # Testing tools
 
-cd /vagrant
-composer.phar install
-
+for tool in tools phpunit_phpunit-selenium psecio_parse sensiolabs-de_deprecation-detector; do
+    cd /vagrant/7.2/${tool}
+    php7.2 /usr/bin/composer.phar install
+done
 

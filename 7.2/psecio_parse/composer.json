@@ -1,0 +1,5 @@
+{
+    "require": {
+        "psecio/parse": "^0.7.0"
+    }
+}
