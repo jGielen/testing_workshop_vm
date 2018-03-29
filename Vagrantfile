@@ -5,7 +5,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define :testing_workshop do |testing_workshop_config|
-        testing_workshop_config.vm.box = "Intracto/Debian9"
+        testing_workshop_config.vm.box = "bento/debian-9.4"
 
         testing_workshop_config.vm.provider "virtualbox" do |v|
             # show a display for easy debugging
